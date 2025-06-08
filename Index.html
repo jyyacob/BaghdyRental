@@ -4,7 +4,63 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Baghdy LLC</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background-color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      padding: 50px 20px;
+    }
+
+    .header {
+      background-color: #00a2e8;
+      color: white;
+      padding: 20px;
+      border-radius: 5px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 2em;
+    }
+
+    .header p {
+      margin: 5px 0 0;
+      font-size: 1.2em;
+    }
+
+    .buttons {
+      margin-top: 60px;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 1.2em;
+      margin: 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 200px;
+    }
+
+    .expense-btn {
+      background-color: #ff7f27;
+      color: white;
+      border: 3px solid black;
+    }
+
+    .rent-btn {
+      background-color: #b6d700;
+      color: white;
+      border: 3px solid black;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -14,7 +70,7 @@
     </div>
 
     <div class="buttons">
-      <button onclick="window.location.href='AddExpense.html'" class="expense-btn" onclick="location.href='add-expense.html'">Add Expense</button>
+      <button class="expense-btn" onclick="location.href='AddExpense.html'">Add Expense</button>
       <button class="rent-btn" onclick="location.href='add-rent.html'">Add Rent</button>
     </div>
   </div>
