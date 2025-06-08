@@ -86,7 +86,7 @@
       <p>Expense</p>
     </div>
 
-    <form class="form">
+    <form id="expenseForm" class="form">
       <label>Today's Date:</label>
       <div class="static-text" id="todayDate"></div>
 
@@ -94,36 +94,30 @@
       <input type="date" id="transactionDate" name="transactionDate" />
 
       <label for="llc">LLC:</label>
-      <select id="llc" name="llc">
-        <option value="">Select LLC</option>
-      </select>
+      <input list="llcOptions" id="llc" name="llc" />
+      <datalist id="llcOptions"></datalist>
 
       <label for="services">Services under:</label>
-      <select id="services" name="services">
-        <option value="">Select Service</option>
-      </select>
+      <input list="servicesOptions" id="services" name="services" />
+      <datalist id="servicesOptions"></datalist>
 
       <label for="type">Type of Expense:</label>
-      <select id="type" name="type">
-        <option value="">Select Type</option>
-      </select>
+      <input list="typeOptions" id="type" name="type" />
+      <datalist id="typeOptions"></datalist>
 
       <div class="inline">
         <label for="subtype">Subtype:</label>
-        <select id="subtype" name="subtype">
-          <option value="">Select Subtype</option>
-        </select>
+        <input list="subtypeOptions" id="subtype" name="subtype" />
+        <datalist id="subtypeOptions"></datalist>
       </div>
 
       <label for="source">Payment Source:</label>
-      <select id="source" name="source">
-        <option value="">Select Source</option>
-      </select>
+      <input list="sourceOptions" id="source" name="source" />
+      <datalist id="sourceOptions"></datalist>
 
       <label for="paidTo">Paid to:</label>
-      <select id="paidTo" name="paidTo">
-        <option value="">Select Recipient</option>
-      </select>
+      <input list="paidToOptions" id="paidTo" name="paidTo" />
+      <datalist id="paidToOptions"></datalist>
 
       <label for="amount">Amount:</label>
       <input type="number" id="amount" name="amount" />
@@ -131,12 +125,8 @@
       <label for="details">Details:</label>
       <textarea id="details" name="details" rows="5"></textarea>
 
+      <button type="submit" class="submit-btn">Add Expense</button>
     </form>
-    <form id="expenseForm" class="form">
-  <!-- ... all form inputs remain the same ... -->
-  <button type="submit" class="submit-btn">Add Expense</button>
-</form>
-
   </div>
 
   <script>
@@ -147,41 +137,65 @@
       day: 'numeric'
     });
     document.getElementById('todayDate').textContent = today;
-  </script>
-<script>
-  const webhookUrl = 'https://YOUR-N8N-URL/webhook/add-expense'; // replace with your n8n URL
 
-  document.getElementById("expenseForm").addEventListener("submit", async function(e) {
-    e.preventDefault();
+    // Load dropdown options from n8n
+    const dropdowns = ["llc", "services", "type", "subtype", "source", "paidTo"];
+    const n8nDropdownURL = "https://YOUR-N8N-URL/webhook/get-dropdowns"; // <-- Replace this
 
-    const data = {
-      transactionDate: document.getElementById("transactionDate").value,
-      llc: document.getElementById("llc").value,
-      services: document.getElementById("services").value,
-      type: document.getElementById("type").value,
-      subtype: document.getElementById("subtype").value,
-      source: document.getElementById("source").value,
-      paidTo: document.getElementById("paidTo").value,
-      amount: document.getElementById("amount").value,
-      details: document.getElementById("details").value
-    };
+    async function loadDropdowns() {
+      try {
+        const res = await fetch(n8nDropdownURL);
+        const data = await res.json(); // { llc: ["Option1", ...], services: [...], ... }
 
-    const response = await fetch(webhookUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
-    });
-
-    if (response.ok) {
-      alert("Expense submitted!");
-      document.getElementById("expenseForm").reset();
-    } else {
-      alert("Failed to submit.");
+        dropdowns.forEach(field => {
+          const datalist = document.getElementById(`${field}Options`);
+          datalist.innerHTML = ""; // Clear old options
+          (data[field] || []).forEach(option => {
+            const el = document.createElement("option");
+            el.value = option;
+            datalist.appendChild(el);
+          });
+        });
+      } catch (err) {
+        console.error("Dropdown load failed:", err);
+      }
     }
-  });
-</script>
 
+    window.onload = loadDropdowns;
+  </script>
+
+  <script>
+    const webhookUrl = 'https://YOUR-N8N-URL/webhook/add-expense'; // <-- Replace this
+
+    document.getElementById("expenseForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const data = {
+        transactionDate: document.getElementById("transactionDate").value,
+        llc: document.getElementById("llc").value,
+        services: document.getElementById("services").value,
+        type: document.getElementById("type").value,
+        subtype: document.getElementById("subtype").value,
+        source: document.getElementById("source").value,
+        paidTo: document.getElementById("paidTo").value,
+        amount: document.getElementById("amount").value,
+        details: document.getElementById("details").value
+      };
+
+      const response = await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        alert("Expense submitted!");
+        document.getElementById("expenseForm").reset();
+        loadDropdowns(); // refresh dropdowns in case new value was added
+      } else {
+        alert("Failed to submit.");
+      }
+    });
+  </script>
 </body>
 </html>
