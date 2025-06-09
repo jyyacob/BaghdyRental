@@ -91,46 +91,45 @@
       <div class="static-text" id="todayDate"></div>
 
       <label for="transactionDate">Transaction Date:</label>
-      <input type="date" id="transactionDate" name="transactionDate" />
+      <input type="date" id="transactionDate" name="transactionDate" required />
 
       <label for="llc">LLC:</label>
-      <input list="llcOptions" id="llc" name="llc" />
+      <input list="llcOptions" id="llc" name="llc" required />
       <datalist id="llcOptions"></datalist>
 
       <label for="services">Services under:</label>
-      <input list="servicesOptions" id="services" name="services" />
+      <input list="servicesOptions" id="services" name="services" required />
       <datalist id="servicesOptions"></datalist>
 
       <label for="type">Type of Expense:</label>
-      <input list="typeOptions" id="type" name="type" />
+      <input list="typeOptions" id="type" name="type" required />
       <datalist id="typeOptions"></datalist>
 
       <div class="inline">
         <label for="subtype">Subtype:</label>
-        <input list="subtypeOptions" id="subtype" name="subtype" />
+        <input list="subtypeOptions" id="subtype" name="subtype" required />
         <datalist id="subtypeOptions"></datalist>
       </div>
 
       <label for="source">Payment Source:</label>
-      <input list="sourceOptions" id="source" name="source" />
+      <input list="sourceOptions" id="source" name="source" required />
       <datalist id="sourceOptions"></datalist>
 
       <label for="paidTo">Paid to:</label>
-      <input list="paidToOptions" id="paidTo" name="paidTo" />
+      <input list="paidToOptions" id="paidTo" name="paidTo" required />
       <datalist id="paidToOptions"></datalist>
 
       <label for="amount">Amount:</label>
-      <input type="number" id="amount" name="amount" />
+      <input type="number" id="amount" name="amount" required />
 
       <label for="details">Details:</label>
-      <textarea id="details" name="details" rows="5"></textarea>
+      <textarea id="details" name="details" rows="5" required></textarea>
 
       <button type="submit" class="submit-btn">Add Expense</button>
     </form>
   </div>
 
   <script>
-    // Set today's date
     const today = new Date().toLocaleDateString(undefined, {
       year: 'numeric',
       month: 'long',
@@ -138,18 +137,17 @@
     });
     document.getElementById('todayDate').textContent = today;
 
-    // Load dropdown options from n8n
     const dropdowns = ["llc", "services", "type", "subtype", "source", "paidTo"];
-    const n8nDropdownURL = "https://YOUR-N8N-URL/webhook/get-dropdowns"; // <-- Replace this
+    const n8nDropdownURL = "https://jyy.app.n8n.cloud/webhook/get-dropdowns";
 
     async function loadDropdowns() {
       try {
         const res = await fetch(n8nDropdownURL);
-        const data = await res.json(); // { llc: ["Option1", ...], services: [...], ... }
+        const data = await res.json();
 
         dropdowns.forEach(field => {
           const datalist = document.getElementById(`${field}Options`);
-          datalist.innerHTML = ""; // Clear old options
+          datalist.innerHTML = "";
           (data[field] || []).forEach(option => {
             const el = document.createElement("option");
             el.value = option;
@@ -165,7 +163,7 @@
   </script>
 
   <script>
-    const webhookUrl = 'https://YOUR-N8N-URL/webhook/add-expense'; // <-- Replace this
+    const webhookUrl = "https://jyy.app.n8n.cloud/webhook/add-expense";
 
     document.getElementById("expenseForm").addEventListener("submit", async function(e) {
       e.preventDefault();
@@ -191,7 +189,7 @@
       if (response.ok) {
         alert("Expense submitted!");
         document.getElementById("expenseForm").reset();
-        loadDropdowns(); // refresh dropdowns in case new value was added
+        loadDropdowns(); // refresh in case new entry was added
       } else {
         alert("Failed to submit.");
       }
